@@ -12,11 +12,10 @@
 
     <groupId>no.falcon</groupId>
     <artifactId>wallas-api</artifactId>
-    <version>${revision}</version>
+    <version>1.0.0</version>
     <name>wallas-api</name>
 
     <properties>
-        <revision>0-SNAPSHOT</revision>
         <java.version>1.8</java.version>
         <kotlin.version>1.3.11</kotlin.version>
     </properties>
