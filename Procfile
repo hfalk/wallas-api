@@ -1,1 +1,1 @@
-./mvnw clean install -U
+./mvnw clean install -U -Drevision=$SOURCE_VERSION
