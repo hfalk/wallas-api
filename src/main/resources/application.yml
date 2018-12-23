@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: ${SPRING_DATASOURCE_URL}
+
+twillio:
+  account-sid: ${TWILLIO_ACCOUNT_SID}
+  auth-token: ${TWILLIO_AUTH_TOKEN}
