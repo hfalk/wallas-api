@@ -13,7 +13,8 @@ class UserCommandsRepository(private val jdbcTemplate: JdbcTemplate) {
 
     fun insertWaitingCommand(type: CommandType, startTime: LocalDateTime, temperature: Int?) {
         jdbcTemplate.update(
-            "INSERT INTO public.commands (command, temperature, start_time, status) VALUES (?, ?, ?, ?)",
+            "INSERT INTO public.commands (created_time, type, temperature, start_time, status) VALUES (?, ?, ?, ?, ?)",
+            LocalDateTime.now(),
             type.name,
             temperature,
             startTime,

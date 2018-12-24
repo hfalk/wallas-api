@@ -11,9 +11,11 @@ class UserCommandRowMapper : RowMapper<UserCommand> {
         return UserCommand(
             resultSet.getInt("id"),
             resultSet.getString("user_id"),
-            CommandType.valueOf(resultSet.getString("command")),
-            resultSet.getInt("temperature"),
+            resultSet.getTimestamp("created_time").toLocalDateTime(),
             resultSet.getTimestamp("start_time").toLocalDateTime(),
+            resultSet.getTimestamp("finished_time")?.toLocalDateTime(),
+            CommandType.valueOf(resultSet.getString("type")),
+            resultSet.getInt("temperature"),
             CommandStatus.valueOf(resultSet.getString("status")),
             resultSet.getString("message_sid")
         )
