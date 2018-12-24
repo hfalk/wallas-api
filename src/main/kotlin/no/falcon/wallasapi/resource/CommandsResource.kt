@@ -4,6 +4,7 @@ import no.falcon.wallasapi.domain.CommandRequest
 import no.falcon.wallasapi.domain.CommandType
 import no.falcon.wallasapi.domain.UserCommand
 import no.falcon.wallasapi.repository.UserCommandsRepository
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
 
@@ -12,15 +13,17 @@ import java.time.LocalDateTime
 class CommandsResource(private val userCommandsRepository: UserCommandsRepository) {
     @GetMapping
     fun getAllUserCommands(): List<UserCommand> {
-        return userCommandsRepository.getUserCommands()
+        return userCommandsRepository.getCommands()
     }
 
     @DeleteMapping("{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     fun deleteUserCommand(@PathVariable id: Int) {
-
+        userCommandsRepository.deleteCommand(id)
     }
 
-    @PostMapping("{type}")
+    @PutMapping("{type}")
+    @ResponseStatus(HttpStatus.CREATED)
     fun postCommand(@PathVariable type: CommandType, @RequestBody commandRequest: CommandRequest) {
         userCommandsRepository.insertWaitingCommand(
             type,

@@ -21,7 +21,11 @@ class UserCommandsRepository(private val jdbcTemplate: JdbcTemplate) {
         )
     }
 
-    fun getUserCommands(): List<UserCommand> {
+    fun getCommands(): List<UserCommand> {
         return jdbcTemplate.query("SELECT * FROM public.commands", UserCommandRowMapper())
+    }
+
+    fun deleteCommand(id: Int) {
+        jdbcTemplate.update("DELETE FROM public.commands WHERE id = ?", id)
     }
 }
