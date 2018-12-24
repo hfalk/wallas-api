@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DATABASE_URL}
+
+twillio:
+  account-sid: ${TWILLIO_ACCOUNT_SID}
+  auth-token: ${TWILLIO_AUTH_TOKEN}
