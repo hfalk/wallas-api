@@ -24,7 +24,7 @@ class CommandsResource(private val userCommandsRepository: UserCommandsRepositor
 
     @PutMapping("{type}")
     @ResponseStatus(HttpStatus.CREATED)
-    fun postCommand(@PathVariable type: CommandType, @RequestBody commandRequest: CommandRequest) {
+    fun putCommand(@PathVariable type: CommandType, @RequestBody commandRequest: CommandRequest) {
         userCommandsRepository.insertWaitingCommand(
             type,
             commandRequest.startTime ?: LocalDateTime.now(),

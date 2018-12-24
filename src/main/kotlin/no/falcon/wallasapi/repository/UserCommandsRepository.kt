@@ -29,4 +29,16 @@ class UserCommandsRepository(private val jdbcTemplate: JdbcTemplate) {
     fun deleteCommand(id: Int) {
         jdbcTemplate.update("DELETE FROM public.commands WHERE id = ?", id)
     }
+
+    fun updateCommandStatus(id: Int, status: CommandStatus) {
+        jdbcTemplate.update("UPDATE public.commands SET status = ? WHERE id = ?", status.name, id)
+    }
+
+    fun getWaitingCommands(): List<UserCommand> {
+        return jdbcTemplate.query(
+            "SELECT * FROM public.commands WHERE status = ?",
+            UserCommandRowMapper(),
+            CommandStatus.WAITING.name
+        )
+    }
 }
