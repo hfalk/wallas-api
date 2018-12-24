@@ -23,6 +23,5 @@ class ExecuteUserCommandTask(private val userCommandsRepository: UserCommandsRep
                 userCommandsRepository.updateCommandStatus(it.id, CommandStatus.FAILED)
             }
         }
-
     }
 }
