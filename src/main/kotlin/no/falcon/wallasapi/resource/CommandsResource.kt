@@ -1,12 +1,11 @@
-package no.falcon.wallasapi
+package no.falcon.wallasapi.resource
 
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
 import com.twilio.Twilio
 import com.twilio.rest.api.v2010.account.Message
 import com.twilio.type.PhoneNumber
+import no.falcon.wallasapi.domain.CommandRequest
+import no.falcon.wallasapi.properties.TwillioProperties
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("commands")
@@ -22,17 +21,17 @@ class CommandsResource(private val twillioProperties: TwillioProperties) {
     }
 
     @PostMapping("start")
-    fun start() {
+    fun start(@RequestBody commandRequest: CommandRequest) {
 
     }
 
     @PostMapping("change")
-    fun change() {
+    fun change(@RequestBody commandRequest: CommandRequest) {
 
     }
 
     @PostMapping("stop")
-    fun stop() {
+    fun stop(@RequestBody commandRequest: CommandRequest) {
 
     }
 }
