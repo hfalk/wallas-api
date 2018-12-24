@@ -1,5 +1,7 @@
 package no.falcon.wallasapi.repository
 
+import no.falcon.wallasapi.domain.UserCommand
+import no.falcon.wallasapi.repository.rowmapper.UserCommandRowMapper
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
@@ -16,5 +18,9 @@ class UserCommandsRepository(private val jdbcTemplate: JdbcTemplate) {
             startTime,
             "pending"
         )
+    }
+
+    fun getUserCommands(): List<UserCommand> {
+        return jdbcTemplate.query("SELECT * FROM public.commands", UserCommandRowMapper())
     }
 }

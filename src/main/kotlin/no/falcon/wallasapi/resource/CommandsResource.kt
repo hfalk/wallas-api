@@ -4,12 +4,18 @@ import com.twilio.Twilio
 import com.twilio.rest.api.v2010.account.Message
 import com.twilio.type.PhoneNumber
 import no.falcon.wallasapi.domain.CommandRequest
+import no.falcon.wallasapi.domain.UserCommand
 import no.falcon.wallasapi.properties.TwillioProperties
+import no.falcon.wallasapi.repository.UserCommandsRepository
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("commands")
-class CommandsResource(private val twillioProperties: TwillioProperties) {
+class CommandsResource(
+    private val twillioProperties: TwillioProperties,
+    private val userCommandsRepository: UserCommandsRepository
+) {
 
     @GetMapping("test")
     fun test() {
@@ -20,9 +26,14 @@ class CommandsResource(private val twillioProperties: TwillioProperties) {
             .create()
     }
 
-    @PostMapping("start")
-    fun start(@RequestBody commandRequest: CommandRequest) {
+    @GetMapping
+    fun getUserCommands(): List<UserCommand> {
+        return userCommandsRepository.getUserCommands()
+    }
 
+    @PostMapping("start")
+    fun start() {
+        userCommandsRepository.insertPendingCommand(10, LocalDateTime.now())
     }
 
     @PostMapping("change")
