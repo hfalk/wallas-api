@@ -2,6 +2,11 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://ec2-54-247-125-116.eu-west-1.compute.amazonaws.com:5432/d8htirls7roqs2?sslmode=require
-    # Get credentials from heroku
+    # Get credentials from Heroku Postgres
     username:
     password:
+
+twillio:
+  # Get credentials from Twillio
+  account-sid:
+  auth-token:
