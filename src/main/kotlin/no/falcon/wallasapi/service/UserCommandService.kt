@@ -9,6 +9,7 @@ import no.falcon.wallasapi.domain.UserCommand
 import no.falcon.wallasapi.properties.TwillioProperties
 import no.falcon.wallasapi.properties.WallasProperties
 import no.falcon.wallasapi.repository.UserCommandsRepository
+import no.falcon.wallasapi.util.DateTimeUtil
 import org.springframework.stereotype.Service
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.sns.SnsClient
@@ -89,15 +90,17 @@ class UserCommandService(
         val waitingCommands = userCommandsRepository.getWaitingCommands()
 
         waitingCommands.forEach {
-            try {
-                userCommandsRepository.updateCommandStatus(it.id, CommandStatus.IN_PROGRESS)
+            if (it.startTime.isBefore(DateTimeUtil.now())) {
+                try {
+                    userCommandsRepository.updateCommandStatus(it.id, CommandStatus.IN_PROGRESS)
 
-                val messageId = sendCommand(it)
+                    val messageId = sendCommand(it)
 
-                userCommandsRepository.updateCommandFinished(it.id, messageId)
-            } catch (ex: Exception) {
-                userCommandsRepository.updateCommandStatus(it.id, CommandStatus.FAILED)
-                throw ex
+                    userCommandsRepository.updateCommandFinished(it.id, messageId)
+                } catch (ex: Exception) {
+                    userCommandsRepository.updateCommandStatus(it.id, CommandStatus.FAILED)
+                    throw ex
+                }
             }
         }
     }
