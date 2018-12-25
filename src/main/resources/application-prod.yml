@@ -6,6 +6,7 @@ spring:
 twillio:
   account-sid: ${TWILLIO_ACCOUNT_SID}
   auth-token: ${TWILLIO_AUTH_TOKEN}
+  phone-number: ${TWILLIO_PHONE_NUMBER}
 
 wallas:
   phone-number: ${WALLAS_PHONE_NUMBER}

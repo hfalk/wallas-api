@@ -8,4 +8,5 @@ import org.springframework.stereotype.Component
 class TwillioProperties {
     lateinit var accountSid: String
     lateinit var authToken: String
+    lateinit var phoneNumber: String
 }
