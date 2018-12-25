@@ -5,6 +5,6 @@ import java.time.ZoneOffset
 
 class DateTimeUtil {
     companion object {
-        fun now() = LocalDateTime.now(ZoneOffset.UTC)
+        fun now(): LocalDateTime = LocalDateTime.now(ZoneOffset.UTC)
     }
 }
