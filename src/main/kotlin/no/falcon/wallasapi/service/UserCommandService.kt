@@ -63,19 +63,19 @@ class UserCommandService(
     private fun sendStartCommand(temperature: Int): String {
         val smsText = "${wallasProperties.pinCode} W1 W2$temperature"
 
-        return sendSMSAws(smsText)
+        return sendSMSTwillio(smsText)
     }
 
     private fun sendChangeCommand(temperature: Int): String {
         val smsText = "${wallasProperties.pinCode} W2$temperature"
 
-        return sendSMSAws(smsText)
+        return sendSMSTwillio(smsText)
     }
 
     private fun sendStopCommand(): String {
         val smsText = "${wallasProperties.pinCode} W0"
 
-        return sendSMSAws(smsText)
+        return sendSMSTwillio(smsText)
     }
 
     private fun sendCommand(userCommand: UserCommand): String {
