@@ -11,5 +11,5 @@ data class UserCommand(
     val type: CommandType,
     val temperature: Int,
     val status: CommandStatus,
-    val messageSid: String?
+    val messageId: String?
 )
