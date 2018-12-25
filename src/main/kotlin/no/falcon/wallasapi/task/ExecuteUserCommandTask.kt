@@ -26,6 +26,7 @@ class ExecuteUserCommandTask(
                 userCommandsRepository.updateCommandMessageId(it.id, messageId)
             } catch (ex: Exception) {
                 userCommandsRepository.updateCommandStatus(it.id, CommandStatus.FAILED)
+                throw ex
             }
         }
     }
