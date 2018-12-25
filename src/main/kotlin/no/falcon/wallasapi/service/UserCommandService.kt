@@ -8,13 +8,40 @@ import no.falcon.wallasapi.domain.UserCommand
 import no.falcon.wallasapi.properties.TwillioProperties
 import no.falcon.wallasapi.properties.WallasProperties
 import org.springframework.stereotype.Service
+import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.sns.SnsClient
+import software.amazon.awssdk.services.sns.model.MessageAttributeValue
+import software.amazon.awssdk.services.sns.model.PublishRequest
 
 @Service
 class UserCommandService(
     private val twillioProperties: TwillioProperties,
     private val wallasProperties: WallasProperties
 ) {
-    private fun sendSMS(smsText: String): String {
+    private fun sendSMSAws(smsText: String): String {
+        val snsClient = SnsClient.builder()
+            .region(Region.EU_WEST_1)
+            .build()
+
+        val smsAttributes = mutableMapOf<String, MessageAttributeValue>(
+            "AWS.SNS.SMS.SenderID" to MessageAttributeValue.builder()
+                .dataType("String")
+                .stringValue("95184532")
+                .build()
+        )
+
+        val request = PublishRequest.builder()
+            .phoneNumber(wallasProperties.phoneNumber)
+            .message(smsText)
+            .messageAttributes(smsAttributes)
+            .build()
+
+        val response = snsClient.publish(request)
+
+        return response.messageId()
+    }
+
+    private fun sendSMSTwillio(smsText: String): String {
         Twilio.init(twillioProperties.accountSid, twillioProperties.authToken)
 
         val message = Message
@@ -31,19 +58,19 @@ class UserCommandService(
     private fun sendStartCommand(temperature: Int): String {
         val smsText = "${wallasProperties.pinCode} W1 W2$temperature"
 
-        return sendSMS(smsText)
+        return sendSMSAws(smsText)
     }
 
     private fun sendChangeCommand(temperature: Int): String {
         val smsText = "${wallasProperties.pinCode} W2$temperature"
 
-        return sendSMS(smsText)
+        return sendSMSAws(smsText)
     }
 
     private fun sendStopCommand(): String {
         val smsText = "${wallasProperties.pinCode} W0"
 
-        return sendSMS(smsText)
+        return sendSMSAws(smsText)
     }
 
     fun sendCommand(userCommand: UserCommand): String {

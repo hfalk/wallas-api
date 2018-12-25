@@ -12,7 +12,7 @@ class ExecuteUserCommandTask(
     private val userCommandsRepository: UserCommandsRepository,
     private val userCommandService: UserCommandService
 ) {
-    @Scheduled(fixedDelay = 30000)
+    @Scheduled(fixedDelay = 10000)
     fun executeUserCommand() {
         val waitingCommands = userCommandsRepository.getWaitingCommands()
 
