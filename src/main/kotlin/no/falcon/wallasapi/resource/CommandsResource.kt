@@ -1,6 +1,7 @@
 package no.falcon.wallasapi.resource
 
 import no.falcon.wallasapi.domain.CommandRequest
+import no.falcon.wallasapi.domain.CommandStatus
 import no.falcon.wallasapi.domain.CommandType
 import no.falcon.wallasapi.domain.UserCommand
 import no.falcon.wallasapi.repository.UserCommandsRepository
@@ -12,7 +13,11 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("commands")
 class CommandsResource(private val userCommandsRepository: UserCommandsRepository) {
     @GetMapping
-    fun getAllUserCommands(): List<UserCommand> {
+    fun getAllUserCommands(@RequestParam(value = "status", required = false) status: CommandStatus?): List<UserCommand> {
+        if (status != null) {
+            return userCommandsRepository.getCommands().filter { it.status == status }
+        }
+
         return userCommandsRepository.getCommands()
     }
 
