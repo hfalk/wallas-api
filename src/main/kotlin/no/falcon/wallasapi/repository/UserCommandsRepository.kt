@@ -4,6 +4,7 @@ import no.falcon.wallasapi.domain.CommandStatus
 import no.falcon.wallasapi.domain.CommandType
 import no.falcon.wallasapi.domain.UserCommand
 import no.falcon.wallasapi.repository.rowmapper.UserCommandRowMapper
+import no.falcon.wallasapi.util.DateTimeUtil
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
@@ -14,7 +15,7 @@ class UserCommandsRepository(private val jdbcTemplate: JdbcTemplate) {
     fun insertWaitingCommand(type: CommandType, startTime: LocalDateTime, temperature: Int?) {
         jdbcTemplate.update(
             "INSERT INTO public.commands (created_time, type, temperature, start_time, status) VALUES (?, ?, ?, ?, ?)",
-            LocalDateTime.now(),
+            DateTimeUtil.now(),
             type.name,
             temperature,
             startTime,
@@ -39,7 +40,7 @@ class UserCommandsRepository(private val jdbcTemplate: JdbcTemplate) {
             "UPDATE public.commands SET status = ?, message_id = ?, finished_time = ? WHERE id = ?",
             CommandStatus.FINISHED.name,
             messageId,
-            LocalDateTime.now(),
+            DateTimeUtil.now(),
             id
         )
     }

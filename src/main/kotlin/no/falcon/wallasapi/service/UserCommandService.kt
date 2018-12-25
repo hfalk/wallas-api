@@ -3,20 +3,24 @@ package no.falcon.wallasapi.service
 import com.twilio.Twilio
 import com.twilio.rest.api.v2010.account.Message
 import com.twilio.type.PhoneNumber
+import no.falcon.wallasapi.domain.CommandStatus
 import no.falcon.wallasapi.domain.CommandType
 import no.falcon.wallasapi.domain.UserCommand
 import no.falcon.wallasapi.properties.TwillioProperties
 import no.falcon.wallasapi.properties.WallasProperties
+import no.falcon.wallasapi.repository.UserCommandsRepository
 import org.springframework.stereotype.Service
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.sns.SnsClient
 import software.amazon.awssdk.services.sns.model.MessageAttributeValue
 import software.amazon.awssdk.services.sns.model.PublishRequest
+import java.lang.Exception
 
 @Service
 class UserCommandService(
     private val twillioProperties: TwillioProperties,
-    private val wallasProperties: WallasProperties
+    private val wallasProperties: WallasProperties,
+    private val userCommandsRepository: UserCommandsRepository
 ) {
     private fun sendSMSAws(smsText: String): String {
         val snsClient = SnsClient.builder()
@@ -73,11 +77,28 @@ class UserCommandService(
         return sendSMSAws(smsText)
     }
 
-    fun sendCommand(userCommand: UserCommand): String {
+    private fun sendCommand(userCommand: UserCommand): String {
         return when (userCommand.type) {
             CommandType.START -> sendStartCommand(userCommand.temperature)
             CommandType.CHANGE -> sendChangeCommand(userCommand.temperature)
             CommandType.STOP -> sendStopCommand()
+        }
+    }
+
+    fun executeReadyUserCommands() {
+        val waitingCommands = userCommandsRepository.getWaitingCommands()
+
+        waitingCommands.forEach {
+            try {
+                userCommandsRepository.updateCommandStatus(it.id, CommandStatus.IN_PROGRESS)
+
+                val messageId = sendCommand(it)
+
+                userCommandsRepository.updateCommandFinished(it.id, messageId)
+            } catch (ex: Exception) {
+                userCommandsRepository.updateCommandStatus(it.id, CommandStatus.FAILED)
+                throw ex
+            }
         }
     }
 }
