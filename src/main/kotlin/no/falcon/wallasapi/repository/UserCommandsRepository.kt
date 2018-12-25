@@ -34,8 +34,14 @@ class UserCommandsRepository(private val jdbcTemplate: JdbcTemplate) {
         jdbcTemplate.update("UPDATE public.commands SET status = ? WHERE id = ?", status.name, id)
     }
 
-    fun updateCommandMessageId(id: Int, messageId: String) {
-        jdbcTemplate.update("UPDATE public.commands SET message_id = ? WHERE id = ?", messageId, id)
+    fun updateCommandFinished(id: Int, messageId: String) {
+        jdbcTemplate.update(
+            "UPDATE public.commands SET status = ?, message_id = ?, finished_time = ? WHERE id = ?",
+            CommandStatus.FINISHED.name,
+            messageId,
+            LocalDateTime.now(),
+            id
+        )
     }
 
     fun getWaitingCommands(): List<UserCommand> {

@@ -22,8 +22,7 @@ class ExecuteUserCommandTask(
 
                 val messageId = userCommandService.sendCommand(it)
 
-                userCommandsRepository.updateCommandStatus(it.id, CommandStatus.FINISHED)
-                userCommandsRepository.updateCommandMessageId(it.id, messageId)
+                userCommandsRepository.updateCommandFinished(it.id, messageId)
             } catch (ex: Exception) {
                 userCommandsRepository.updateCommandStatus(it.id, CommandStatus.FAILED)
                 throw ex
