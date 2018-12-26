@@ -6,6 +6,7 @@ import com.twilio.type.PhoneNumber
 import no.falcon.wallasapi.domain.CommandStatus
 import no.falcon.wallasapi.domain.CommandType
 import no.falcon.wallasapi.domain.UserCommand
+import no.falcon.wallasapi.properties.FeaturesProperties
 import no.falcon.wallasapi.properties.TwillioProperties
 import no.falcon.wallasapi.properties.WallasProperties
 import no.falcon.wallasapi.repository.UserCommandsRepository
@@ -21,43 +22,52 @@ import java.lang.Exception
 class UserCommandService(
     private val twillioProperties: TwillioProperties,
     private val wallasProperties: WallasProperties,
-    private val userCommandsRepository: UserCommandsRepository
+    private val userCommandsRepository: UserCommandsRepository,
+    private val featuresProperties: FeaturesProperties
 ) {
     private fun sendSMSAws(smsText: String): String {
-        val snsClient = SnsClient.builder()
-            .region(Region.EU_WEST_1)
-            .build()
-
-        val smsAttributes = mutableMapOf<String, MessageAttributeValue>(
-            "AWS.SNS.SMS.SenderID" to MessageAttributeValue.builder()
-                .dataType("String")
-                .stringValue("95184532")
+        if (featuresProperties.smsEnabled) {
+            val snsClient = SnsClient.builder()
+                .region(Region.EU_WEST_1)
                 .build()
-        )
 
-        val request = PublishRequest.builder()
-            .phoneNumber(wallasProperties.phoneNumber)
-            .message(smsText)
-            .messageAttributes(smsAttributes)
-            .build()
+            val smsAttributes = mutableMapOf<String, MessageAttributeValue>(
+                "AWS.SNS.SMS.SenderID" to MessageAttributeValue.builder()
+                    .dataType("String")
+                    .stringValue("95184532")
+                    .build()
+            )
 
-        val response = snsClient.publish(request)
+            val request = PublishRequest.builder()
+                .phoneNumber(wallasProperties.phoneNumber)
+                .message(smsText)
+                .messageAttributes(smsAttributes)
+                .build()
 
-        return response.messageId()
+            val response = snsClient.publish(request)
+
+            return response.messageId()
+        }
+
+        return "sms-disabled"
     }
 
     private fun sendSMSTwillio(smsText: String): String {
-        Twilio.init(twillioProperties.accountSid, twillioProperties.authToken)
+        if (featuresProperties.smsEnabled) {
+            Twilio.init(twillioProperties.accountSid, twillioProperties.authToken)
 
-        val message = Message
-            .creator(
-                PhoneNumber(wallasProperties.phoneNumber),
-                PhoneNumber(twillioProperties.phoneNumber),
-                smsText
-            )
-            .create()
+            val message = Message
+                .creator(
+                    PhoneNumber(wallasProperties.phoneNumber),
+                    PhoneNumber(twillioProperties.phoneNumber),
+                    smsText
+                )
+                .create()
 
-        return message.sid
+            return message.sid
+        }
+
+        return "sms-disabled"
     }
 
     private fun sendStartCommand(temperature: Int): String {
