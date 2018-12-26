@@ -50,6 +50,14 @@ class UserCommandsRepository(private val jdbcTemplate: JdbcTemplate) {
         )
     }
 
+    fun updatePushNotificationId(id: Int, pushNotificationId: String) {
+        jdbcTemplate.update(
+            "UPDATE public.commands SET push_notification_id = ? WHERE id = ?",
+            pushNotificationId,
+            id
+        )
+    }
+
     fun getWaitingCommands(): List<UserCommand> {
         return jdbcTemplate.query(
             "SELECT * FROM public.commands WHERE status = ?",

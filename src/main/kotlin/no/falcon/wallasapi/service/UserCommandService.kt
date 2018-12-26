@@ -3,7 +3,6 @@ package no.falcon.wallasapi.service
 import no.falcon.wallasapi.domain.CommandStatus
 import no.falcon.wallasapi.domain.CommandType
 import no.falcon.wallasapi.domain.UserCommand
-import no.falcon.wallasapi.properties.WallasProperties
 import no.falcon.wallasapi.repository.UserCommandsRepository
 import no.falcon.wallasapi.util.DateTimeUtil
 import org.springframework.stereotype.Service
@@ -11,46 +10,48 @@ import java.lang.Exception
 
 @Service
 class UserCommandService(
-    private val wallasProperties: WallasProperties,
     private val userCommandsRepository: UserCommandsRepository,
     private val smsService: SmsService,
     private val pushNotificationService: PushNotificationService
 ) {
-    private fun sendStartCommand(temperature: Int): String {
-        val smsText = "${wallasProperties.pinCode} W1 W2$temperature"
+    private fun sendStartCommand(commandId: Int, temperature: Int) {
+        val messageId = smsService.sendStartSms(temperature)
+        val pushNotificationId = pushNotificationService.sendStartNotification(temperature)
 
-        val messageId = smsService.sendSms(smsText)
-
-        pushNotificationService.sendStartNotification(temperature)
-
-        return messageId
+        userCommandsRepository.updateMessageId(commandId, messageId)
+        userCommandsRepository.updatePushNotificationId(commandId, pushNotificationId)
     }
 
-    private fun sendChangeCommand(temperature: Int): String {
-        val smsText = "${wallasProperties.pinCode} W2$temperature"
+    private fun sendChangeCommand(commandId: Int, temperature: Int) {
+        val messageId = smsService.sendChangeSms(temperature)
+        val pushNotificationId = pushNotificationService.sendChangeNotification(temperature)
 
-        val messageId = smsService.sendSms(smsText)
-
-        pushNotificationService.sendChangeNotification(temperature)
-
-        return messageId
+        userCommandsRepository.updateMessageId(commandId, messageId)
+        userCommandsRepository.updatePushNotificationId(commandId, pushNotificationId)
     }
 
-    private fun sendStopCommand(): String {
-        val smsText = "${wallasProperties.pinCode} W0"
+    private fun sendStopCommand(commandId: Int) {
+        val messageId = smsService.sendStopSms()
+        val pushNotificationId = pushNotificationService.sendStopNotification()
 
-        val messageId = smsService.sendSms(smsText)
-
-        pushNotificationService.sendStopNotification()
-
-        return messageId
+        userCommandsRepository.updateMessageId(commandId, messageId)
+        userCommandsRepository.updatePushNotificationId(commandId, pushNotificationId)
     }
 
-    private fun sendCommand(userCommand: UserCommand): String {
-        return when (userCommand.type) {
-            CommandType.START -> sendStartCommand(userCommand.temperature)
-            CommandType.CHANGE -> sendChangeCommand(userCommand.temperature)
-            CommandType.STOP -> sendStopCommand()
+    private fun sendCommand(userCommand: UserCommand) {
+        try {
+            userCommandsRepository.updateCommandStatus(userCommand.id, CommandStatus.IN_PROGRESS)
+
+            when (userCommand.type) {
+                CommandType.START -> sendStartCommand(userCommand.id, userCommand.temperature)
+                CommandType.CHANGE -> sendChangeCommand(userCommand.id, userCommand.temperature)
+                CommandType.STOP -> sendStopCommand(userCommand.id)
+            }
+
+            userCommandsRepository.updateCommandStatus(userCommand.id, CommandStatus.FINISHED)
+        } catch (ex: Exception) {
+            userCommandsRepository.updateCommandStatus(userCommand.id, CommandStatus.FAILED)
+            throw ex
         }
     }
 
@@ -59,17 +60,7 @@ class UserCommandService(
 
         waitingCommands.forEach {
             if (it.startTime.isBefore(DateTimeUtil.now())) {
-                try {
-                    userCommandsRepository.updateCommandStatus(it.id, CommandStatus.IN_PROGRESS)
-
-                    val messageId = sendCommand(it)
-
-                    userCommandsRepository.updateCommandStatus(it.id, CommandStatus.FINISHED)
-                    userCommandsRepository.updateMessageId(it.id, messageId)
-                } catch (ex: Exception) {
-                    userCommandsRepository.updateCommandStatus(it.id, CommandStatus.FAILED)
-                    throw ex
-                }
+                sendCommand(it)
             }
         }
     }

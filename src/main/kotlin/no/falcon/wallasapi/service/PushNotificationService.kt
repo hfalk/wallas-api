@@ -6,33 +6,19 @@ import org.springframework.stereotype.Component
 
 @Component
 class PushNotificationService(private val appCenterClient: AppCenterClient) {
-    fun sendStartNotification(temperature: Int) {
-        val content = PushNotificationContent(
-            "START",
-            "Wallas ble startet",
-            "Temperatur satt til $temperature grader"
-        )
+    private fun sendPushNotification(name: String, title: String, body: String): String {
+        val content = PushNotificationContent(name, title, body)
 
-        appCenterClient.postPushNotification(content)
+        val response = appCenterClient.postPushNotification(content)
+
+        return response?.notification_id ?: "notification_id_unavailable"
     }
 
-    fun sendChangeNotification(temperature: Int) {
-        val content = PushNotificationContent(
-            "CHANGE",
-            "Wallas ble endret",
-            "Temperatur endret til $temperature grader"
-        )
+    fun sendStartNotification(temperature: Int) =
+        sendPushNotification("START", "Wallas ble startet", "Temperatur satt til $temperature grader")
 
-        appCenterClient.postPushNotification(content)
-    }
+    fun sendChangeNotification(temperature: Int) =
+        sendPushNotification("CHANGE", "Wallas ble endret", "Temperatur endret til $temperature grader")
 
-    fun sendStopNotification() {
-        val content = PushNotificationContent(
-            "STOP",
-            "Wallas ble stoppet",
-            ""
-        )
-
-        appCenterClient.postPushNotification(content)
-    }
+    fun sendStopNotification() = sendPushNotification("STOP", "Wallas ble stoppet", "")
 }

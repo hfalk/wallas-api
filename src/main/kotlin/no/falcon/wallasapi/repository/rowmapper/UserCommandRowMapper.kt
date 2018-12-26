@@ -17,7 +17,8 @@ class UserCommandRowMapper : RowMapper<UserCommand> {
             CommandType.valueOf(resultSet.getString("type")),
             resultSet.getInt("temperature"),
             CommandStatus.valueOf(resultSet.getString("status")),
-            resultSet.getString("message_id")
+            resultSet.getString("message_id"),
+            resultSet.getString("push_notification_id")
         )
     }
 }
