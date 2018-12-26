@@ -96,7 +96,8 @@ class UserCommandService(
 
                     val messageId = sendCommand(it)
 
-                    userCommandsRepository.updateCommandFinished(it.id, messageId)
+                    userCommandsRepository.updateCommandStatus(it.id, CommandStatus.FINISHED)
+                    userCommandsRepository.updateMessageId(it.id, messageId)
                 } catch (ex: Exception) {
                     userCommandsRepository.updateCommandStatus(it.id, CommandStatus.FAILED)
                     throw ex

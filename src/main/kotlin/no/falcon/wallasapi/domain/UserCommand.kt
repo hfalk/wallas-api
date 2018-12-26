@@ -7,7 +7,7 @@ data class UserCommand(
     val userId: String?,
     val createdTime: LocalDateTime,
     val startTime: LocalDateTime,
-    val finishedTime: LocalDateTime?,
+    val lastUpdatedTime: LocalDateTime,
     val type: CommandType,
     val temperature: Int,
     val status: CommandStatus,

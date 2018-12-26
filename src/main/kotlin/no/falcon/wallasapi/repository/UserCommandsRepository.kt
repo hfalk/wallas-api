@@ -14,7 +14,8 @@ class UserCommandsRepository(private val jdbcTemplate: JdbcTemplate) {
 
     fun insertWaitingCommand(type: CommandType, startTime: LocalDateTime, temperature: Int?) {
         jdbcTemplate.update(
-            "INSERT INTO public.commands (created_time, type, temperature, start_time, status) VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO public.commands (created_time, last_updated_time, type, temperature, start_time, status) VALUES (?, ?, ?, ?, ?, ?)",
+            DateTimeUtil.now(),
             DateTimeUtil.now(),
             type.name,
             temperature,
@@ -32,15 +33,18 @@ class UserCommandsRepository(private val jdbcTemplate: JdbcTemplate) {
     }
 
     fun updateCommandStatus(id: Int, status: CommandStatus) {
-        jdbcTemplate.update("UPDATE public.commands SET status = ? WHERE id = ?", status.name, id)
+        jdbcTemplate.update(
+            "UPDATE public.commands SET status = ?, last_updated_time = ? WHERE id = ?",
+            status.name,
+            DateTimeUtil.now(),
+            id
+        )
     }
 
-    fun updateCommandFinished(id: Int, messageId: String) {
+    fun updateMessageId(id: Int, messageId: String) {
         jdbcTemplate.update(
-            "UPDATE public.commands SET status = ?, message_id = ?, finished_time = ? WHERE id = ?",
-            CommandStatus.FINISHED.name,
+            "UPDATE public.commands SET message_id = ? WHERE id = ?",
             messageId,
-            DateTimeUtil.now(),
             id
         )
     }

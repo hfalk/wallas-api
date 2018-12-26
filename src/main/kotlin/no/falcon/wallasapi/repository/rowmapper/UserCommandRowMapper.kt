@@ -13,7 +13,7 @@ class UserCommandRowMapper : RowMapper<UserCommand> {
             resultSet.getString("user_id"),
             resultSet.getTimestamp("created_time").toLocalDateTime(),
             resultSet.getTimestamp("start_time").toLocalDateTime(),
-            resultSet.getTimestamp("finished_time")?.toLocalDateTime(),
+            resultSet.getTimestamp("last_updated_time").toLocalDateTime(),
             CommandType.valueOf(resultSet.getString("type")),
             resultSet.getInt("temperature"),
             CommandStatus.valueOf(resultSet.getString("status")),
