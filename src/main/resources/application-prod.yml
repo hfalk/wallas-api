@@ -14,3 +14,11 @@ wallas:
 
 features:
   sms-enabled: ${FEATURES_SMS_ENABLED}
+
+app-center:
+  api-token: ${APP_CENTER_API_TOKEN}
+  base-url: https://api.appcenter.ms/v0.1/apps
+  owner-name: havard.falk
+  ios-app-name: wallas-2
+  android-app-name: wallas-1
+
