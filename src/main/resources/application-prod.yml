@@ -13,7 +13,7 @@ wallas:
   pin-code: ${WALLAS_PIN_CODE}
 
 features:
-  sms-enabled: ${FEATURES_SMS_ENABLED}
+  sms-provider: ${FEATURES_SMS_PROVIDER}
 
 app-center:
   api-token: ${APP_CENTER_API_TOKEN}

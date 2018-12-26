@@ -5,6 +5,7 @@ import com.twilio.rest.api.v2010.account.Message
 import com.twilio.type.PhoneNumber
 import no.falcon.wallasapi.domain.CommandStatus
 import no.falcon.wallasapi.domain.CommandType
+import no.falcon.wallasapi.domain.SmsProvider
 import no.falcon.wallasapi.domain.UserCommand
 import no.falcon.wallasapi.properties.FeaturesProperties
 import no.falcon.wallasapi.properties.TwillioProperties
@@ -23,10 +24,11 @@ class UserCommandService(
     private val twillioProperties: TwillioProperties,
     private val wallasProperties: WallasProperties,
     private val userCommandsRepository: UserCommandsRepository,
-    private val featuresProperties: FeaturesProperties
+    private val featuresProperties: FeaturesProperties,
+    private val pushNotificationService: PushNotificationService
 ) {
-    private fun sendSMSAws(smsText: String): String {
-        if (featuresProperties.smsEnabled) {
+    private fun sendSmsAws(smsText: String): String {
+        if (featuresProperties.smsProvider == SmsProvider.AWS) {
             val snsClient = SnsClient.builder()
                 .region(Region.EU_WEST_1)
                 .build()
@@ -52,8 +54,8 @@ class UserCommandService(
         return "sms-disabled"
     }
 
-    private fun sendSMSTwillio(smsText: String): String {
-        if (featuresProperties.smsEnabled) {
+    private fun sendSmsTwillio(smsText: String): String {
+        if (featuresProperties.smsProvider == SmsProvider.TWILLIO) {
             Twilio.init(twillioProperties.accountSid, twillioProperties.authToken)
 
             val message = Message
@@ -70,22 +72,42 @@ class UserCommandService(
         return "sms-disabled"
     }
 
+    private fun sendSms(smsText: String): String {
+        return when (featuresProperties.smsProvider) {
+            SmsProvider.AWS -> sendSmsAws(smsText)
+            SmsProvider.TWILLIO -> sendSmsTwillio(smsText)
+            SmsProvider.NONE -> "sms_disabled"
+        }
+    }
+
     private fun sendStartCommand(temperature: Int): String {
         val smsText = "${wallasProperties.pinCode} W1 W2$temperature"
 
-        return sendSMSTwillio(smsText)
+        val messageId = sendSms(smsText)
+
+        pushNotificationService.sendStartNotification(temperature)
+
+        return messageId
     }
 
     private fun sendChangeCommand(temperature: Int): String {
         val smsText = "${wallasProperties.pinCode} W2$temperature"
 
-        return sendSMSTwillio(smsText)
+        val messageId = sendSms(smsText)
+
+        pushNotificationService.sendChangeNotification(temperature)
+
+        return messageId
     }
 
     private fun sendStopCommand(): String {
         val smsText = "${wallasProperties.pinCode} W0"
 
-        return sendSMSTwillio(smsText)
+        val messageId = sendSms(smsText)
+
+        pushNotificationService.sendStopNotification()
+
+        return messageId
     }
 
     private fun sendCommand(userCommand: UserCommand): String {

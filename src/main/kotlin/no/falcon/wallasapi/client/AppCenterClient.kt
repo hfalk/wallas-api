@@ -15,14 +15,12 @@ class AppCenterClient(
     private val restTemplateBuilder: RestTemplateBuilder,
     private val appCenterProperties: AppCenterProperties
 ) {
-    fun postPushNotification(): PushNotificationResponse? {
+    fun postPushNotification(content: PushNotificationContent): PushNotificationResponse? {
         val restTemplate = restTemplateBuilder.rootUri(appCenterProperties.baseUrl).build()
 
-        val content = PushNotificationContent("test", "test", "test")
         val request = PushNotificationRequest(content)
 
         val headers = HttpHeaders()
-
         headers.add("X-API-Token", appCenterProperties.apiToken)
 
         val httpEntity = HttpEntity(request, headers)
