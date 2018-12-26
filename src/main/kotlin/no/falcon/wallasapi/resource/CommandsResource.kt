@@ -8,10 +8,14 @@ import no.falcon.wallasapi.repository.UserCommandsRepository
 import no.falcon.wallasapi.util.DateTimeUtil
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import javax.servlet.http.HttpServletRequest
 
 @RestController
 @RequestMapping("commands")
-class CommandsResource(private val userCommandsRepository: UserCommandsRepository) {
+class CommandsResource(
+    private val userCommandsRepository: UserCommandsRepository,
+    private val request: HttpServletRequest
+) {
     @GetMapping
     fun getAllUserCommands(@RequestParam(value = "status", required = false) status: CommandStatus?): List<UserCommand> {
         if (status != null) {
@@ -31,6 +35,7 @@ class CommandsResource(private val userCommandsRepository: UserCommandsRepositor
     @ResponseStatus(HttpStatus.CREATED)
     fun putCommand(@PathVariable type: CommandType, @RequestBody commandRequest: CommandRequest) {
         userCommandsRepository.insertWaitingCommand(
+            request.remoteUser,
             type,
             commandRequest.startTime ?: DateTimeUtil.now(),
             commandRequest.temperature

@@ -12,9 +12,10 @@ import java.time.LocalDateTime
 @Repository
 class UserCommandsRepository(private val jdbcTemplate: JdbcTemplate) {
 
-    fun insertWaitingCommand(type: CommandType, startTime: LocalDateTime, temperature: Int?) {
+    fun insertWaitingCommand(userId: String, type: CommandType, startTime: LocalDateTime, temperature: Int?) {
         jdbcTemplate.update(
-            "INSERT INTO public.commands (created_time, last_updated_time, type, temperature, start_time, status) VALUES (?, ?, ?, ?, ?, ?)",
+            "INSERT INTO public.commands (user_id, created_time, last_updated_time, type, temperature, start_time, status) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            userId,
             DateTimeUtil.now(),
             DateTimeUtil.now(),
             type.name,
