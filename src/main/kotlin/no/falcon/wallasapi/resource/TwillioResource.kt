@@ -1,7 +1,8 @@
 package no.falcon.wallasapi.resource
 
 import mu.KotlinLogging
-import org.springframework.http.HttpEntity
+import no.falcon.wallasapi.domain.TwillioInboundSms
+import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -11,9 +12,8 @@ import org.springframework.web.bind.annotation.RestController
 class TwillioResource {
     private val logger = KotlinLogging.logger {}
 
-    @PostMapping("inbound")
-    fun inbound(httpEntity: HttpEntity<String>) {
-        logger.info { httpEntity.body }
-        logger.info { httpEntity.headers }
+    @PostMapping(value = ["inbound"], consumes = [MediaType.APPLICATION_FORM_URLENCODED_VALUE])
+    fun inbound(twillioInboundSms: TwillioInboundSms) {
+        logger.info { twillioInboundSms }
     }
 }
