@@ -10,7 +10,7 @@ class StatusRepository(private val jdbcTemplate: JdbcTemplate) {
         val id = UUID.randomUUID().toString()
 
         jdbcTemplate.update(
-            "INSERT INTO public.status (id, raw_value, fromPhoneNumber, messageId) VALUES (?, ?, ?, ?)",
+            "INSERT INTO public.status (id, raw_value, from_phone_number, message_id) VALUES (?, ?, ?, ?)",
             id,
             rawStatusString,
             fromPhoneNumber,
