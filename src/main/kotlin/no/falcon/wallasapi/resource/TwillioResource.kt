@@ -40,6 +40,10 @@ class TwillioResource(
         val params = request.parameterMap.map { prop -> prop.key to prop.value[0] }.toMap()
         val twilioSignature = request.getHeader("X-Twilio-Signature")
 
+        logger.info { url }
+        logger.info { params }
+        logger.info { twilioSignature }
+
         val isValid = validator.validate(url, params, twilioSignature)
 
         logger.info { isValid }
