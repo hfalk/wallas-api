@@ -2,6 +2,7 @@ package no.falcon.wallasapi.resource
 
 import mu.KotlinLogging
 import no.falcon.wallasapi.domain.TwillioInboundSms
+import no.falcon.wallasapi.service.PushNotificationService
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.PostMapping
@@ -11,12 +12,15 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("twillio")
-class TwillioResource {
+class TwillioResource(
+    private val pushNotificationService: PushNotificationService
+) {
     private val logger = KotlinLogging.logger {}
 
     @PostMapping(value = ["inbound"], consumes = [MediaType.APPLICATION_FORM_URLENCODED_VALUE])
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun inbound(twillioInboundSms: TwillioInboundSms) {
         logger.info { twillioInboundSms }
+        pushNotificationService.sendStatusNotification(twillioInboundSms.Body)
     }
 }

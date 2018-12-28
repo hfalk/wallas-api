@@ -21,4 +21,6 @@ class PushNotificationService(private val appCenterClient: AppCenterClient) {
         sendPushNotification("CHANGE", "Wallas ble endret", "Temperatur endret til $temperature grader")
 
     fun sendStopNotification() = sendPushNotification("STOP", "Wallas ble stoppet", "")
+
+    fun sendStatusNotification(status: String) = sendPushNotification("STATUS", "Wallas status", status)
 }

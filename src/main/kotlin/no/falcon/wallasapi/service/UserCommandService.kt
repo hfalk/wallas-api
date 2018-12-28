@@ -38,6 +38,12 @@ class UserCommandService(
         userCommandsRepository.updatePushNotificationId(commandId, pushNotificationId)
     }
 
+    private fun sendStatusCommand(commandId: Int) {
+        val messageId = smsService.sendStatusSms()
+
+        userCommandsRepository.updateMessageId(commandId, messageId)
+    }
+
     private fun sendCommand(userCommand: UserCommand) {
         try {
             userCommandsRepository.updateCommandStatus(userCommand.id, CommandStatus.IN_PROGRESS)
@@ -46,6 +52,7 @@ class UserCommandService(
                 CommandType.START -> sendStartCommand(userCommand.id, userCommand.temperature)
                 CommandType.CHANGE -> sendChangeCommand(userCommand.id, userCommand.temperature)
                 CommandType.STOP -> sendStopCommand(userCommand.id)
+                CommandType.STATUS -> sendStatusCommand(userCommand.id)
             }
 
             userCommandsRepository.updateCommandStatus(userCommand.id, CommandStatus.FINISHED)

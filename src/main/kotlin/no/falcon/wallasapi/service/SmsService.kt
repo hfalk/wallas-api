@@ -69,4 +69,6 @@ class SmsService(
     fun sendChangeSms(temperature: Int): String = sendSms("${wallasProperties.pinCode} W2$temperature")
 
     fun sendStopSms(): String = sendSms("${wallasProperties.pinCode} W0")
+
+    fun sendStatusSms(): String = sendSms("${wallasProperties.pinCode} S4")
 }
