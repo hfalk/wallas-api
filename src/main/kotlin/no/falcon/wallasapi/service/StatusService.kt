@@ -14,4 +14,6 @@ class StatusService(
 
         statusRepository.updatePushNotificationId(statusId, pushNotificationId)
     }
+
+    fun getStatuses() = statusRepository.getStatuses()
 }

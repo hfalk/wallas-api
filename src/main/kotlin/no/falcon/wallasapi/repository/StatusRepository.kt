@@ -1,5 +1,7 @@
 package no.falcon.wallasapi.repository
 
+import no.falcon.wallasapi.domain.Status
+import no.falcon.wallasapi.repository.rowmapper.StatusRowMapper
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
 import java.util.*
@@ -18,6 +20,10 @@ class StatusRepository(private val jdbcTemplate: JdbcTemplate) {
         )
 
         return id
+    }
+
+    fun getStatuses(): List<Status> {
+        return jdbcTemplate.query("SELECT * FROM public.status", StatusRowMapper())
     }
 
     fun updatePushNotificationId(statusId: String, pushNotificationId: String) {
