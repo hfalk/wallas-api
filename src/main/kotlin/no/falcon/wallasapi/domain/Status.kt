@@ -1,9 +1,11 @@
 package no.falcon.wallasapi.domain
 
+import java.time.LocalDateTime
+
 data class Status(
     val id: String,
+    val createdTime: LocalDateTime,
     val content: StatusContent,
-    val fromPhoneNumber: String,
     val messageId: String,
     val pushNotificationId: String?
 )

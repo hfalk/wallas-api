@@ -8,8 +8,8 @@ class StatusService(
     private val pushNotificationService: PushNotificationService,
     private val statusRepository: StatusRepository
 ) {
-    fun insertStatus(statusRawString: String, fromPhoneNumber: String, messageId: String) {
-        val statusId = statusRepository.insertStatus(statusRawString, fromPhoneNumber, messageId)
+    fun insertStatus(statusRawString: String, messageId: String) {
+        val statusId = statusRepository.insertStatus(statusRawString, messageId)
         val pushNotificationId = pushNotificationService.sendStatusNotification(statusRawString)
 
         statusRepository.updatePushNotificationId(statusId, pushNotificationId)
