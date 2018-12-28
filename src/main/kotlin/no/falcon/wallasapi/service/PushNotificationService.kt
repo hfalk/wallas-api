@@ -1,6 +1,7 @@
 package no.falcon.wallasapi.service
 
 import no.falcon.wallasapi.client.AppCenterClient
+import no.falcon.wallasapi.domain.StatusContent
 import no.falcon.wallasapi.domain.appcenter.PushNotificationContent
 import org.springframework.stereotype.Component
 
@@ -22,5 +23,9 @@ class PushNotificationService(private val appCenterClient: AppCenterClient) {
 
     fun sendStopNotification() = sendPushNotification("STOP", "Wallas ble stoppet", "")
 
-    fun sendStatusNotification(status: String) = sendPushNotification("STATUS", "Wallas status", status)
+    fun sendStatusNotification(statusContent: StatusContent) = sendPushNotification(
+        "STATUS",
+        "Wallas status",
+        "${statusContent.heaterStatus} Set temp: ${statusContent.setTemp}. Read temp: ${statusContent.readTemp}. Volt: ${statusContent.volt}"
+    )
 }
