@@ -14,5 +14,6 @@ class TwillioResource {
     @PostMapping("inbound")
     fun inbound(httpEntity: HttpEntity<String>) {
         logger.info { httpEntity.body }
+        logger.info { httpEntity.headers }
     }
 }
