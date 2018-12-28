@@ -9,7 +9,7 @@ import java.sql.ResultSet
 class UserCommandRowMapper : RowMapper<UserCommand> {
     override fun mapRow(resultSet: ResultSet, rowNumber: Int): UserCommand {
         return UserCommand(
-            resultSet.getInt("id"),
+            resultSet.getString("id"),
             resultSet.getString("user_id"),
             resultSet.getTimestamp("created_time").toLocalDateTime(),
             resultSet.getTimestamp("start_time").toLocalDateTime(),

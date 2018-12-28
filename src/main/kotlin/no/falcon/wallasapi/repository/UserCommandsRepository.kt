@@ -8,13 +8,17 @@ import no.falcon.wallasapi.util.DateTimeUtil
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
+import java.util.*
 
 @Repository
 class UserCommandsRepository(private val jdbcTemplate: JdbcTemplate) {
 
-    fun insertWaitingCommand(userId: String, type: CommandType, startTime: LocalDateTime, temperature: Int?) {
+    fun insertWaitingCommand(userId: String, type: CommandType, startTime: LocalDateTime, temperature: Int?): String {
+        val id = UUID.randomUUID().toString()
+
         jdbcTemplate.update(
-            "INSERT INTO public.commands (user_id, created_time, last_updated_time, type, temperature, start_time, status) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO public.user_commands (id, user_id, created_time, last_updated_time, type, temperature, start_time, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            id,
             userId,
             DateTimeUtil.now(),
             DateTimeUtil.now(),
@@ -23,36 +27,38 @@ class UserCommandsRepository(private val jdbcTemplate: JdbcTemplate) {
             startTime,
             CommandStatus.WAITING.name
         )
+
+        return id
     }
 
     fun getCommands(): List<UserCommand> {
-        return jdbcTemplate.query("SELECT * FROM public.commands", UserCommandRowMapper())
+        return jdbcTemplate.query("SELECT * FROM public.user_commands", UserCommandRowMapper())
     }
 
-    fun deleteCommand(id: Int) {
-        jdbcTemplate.update("DELETE FROM public.commands WHERE id = ?", id)
+    fun deleteCommand(id: String) {
+        jdbcTemplate.update("DELETE FROM public.user_commands WHERE id = ?", id)
     }
 
-    fun updateCommandStatus(id: Int, status: CommandStatus) {
+    fun updateCommandStatus(id: String, status: CommandStatus) {
         jdbcTemplate.update(
-            "UPDATE public.commands SET status = ?, last_updated_time = ? WHERE id = ?",
+            "UPDATE public.user_commands SET status = ?, last_updated_time = ? WHERE id = ?",
             status.name,
             DateTimeUtil.now(),
             id
         )
     }
 
-    fun updateMessageId(id: Int, messageId: String) {
+    fun updateMessageId(id: String, messageId: String) {
         jdbcTemplate.update(
-            "UPDATE public.commands SET message_id = ? WHERE id = ?",
+            "UPDATE public.user_commands SET message_id = ? WHERE id = ?",
             messageId,
             id
         )
     }
 
-    fun updatePushNotificationId(id: Int, pushNotificationId: String) {
+    fun updatePushNotificationId(id: String, pushNotificationId: String) {
         jdbcTemplate.update(
-            "UPDATE public.commands SET push_notification_id = ? WHERE id = ?",
+            "UPDATE public.user_commands SET push_notification_id = ? WHERE id = ?",
             pushNotificationId,
             id
         )
@@ -60,7 +66,7 @@ class UserCommandsRepository(private val jdbcTemplate: JdbcTemplate) {
 
     fun getWaitingCommands(): List<UserCommand> {
         return jdbcTemplate.query(
-            "SELECT * FROM public.commands WHERE status = ?",
+            "SELECT * FROM public.user_commands WHERE status = ?",
             UserCommandRowMapper(),
             CommandStatus.WAITING.name
         )

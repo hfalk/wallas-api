@@ -27,7 +27,7 @@ class CommandsResource(
 
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun deleteUserCommand(@PathVariable id: Int) {
+    fun deleteUserCommand(@PathVariable id: String) {
         userCommandsRepository.deleteCommand(id)
     }
 

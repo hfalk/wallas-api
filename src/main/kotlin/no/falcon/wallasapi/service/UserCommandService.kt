@@ -14,7 +14,7 @@ class UserCommandService(
     private val smsService: SmsService,
     private val pushNotificationService: PushNotificationService
 ) {
-    private fun sendStartCommand(commandId: Int, temperature: Int) {
+    private fun sendStartCommand(commandId: String, temperature: Int) {
         val messageId = smsService.sendStartSms(temperature)
         val pushNotificationId = pushNotificationService.sendStartNotification(temperature)
 
@@ -22,7 +22,7 @@ class UserCommandService(
         userCommandsRepository.updatePushNotificationId(commandId, pushNotificationId)
     }
 
-    private fun sendChangeCommand(commandId: Int, temperature: Int) {
+    private fun sendChangeCommand(commandId: String, temperature: Int) {
         val messageId = smsService.sendChangeSms(temperature)
         val pushNotificationId = pushNotificationService.sendChangeNotification(temperature)
 
@@ -30,7 +30,7 @@ class UserCommandService(
         userCommandsRepository.updatePushNotificationId(commandId, pushNotificationId)
     }
 
-    private fun sendStopCommand(commandId: Int) {
+    private fun sendStopCommand(commandId: String) {
         val messageId = smsService.sendStopSms()
         val pushNotificationId = pushNotificationService.sendStopNotification()
 
@@ -38,7 +38,7 @@ class UserCommandService(
         userCommandsRepository.updatePushNotificationId(commandId, pushNotificationId)
     }
 
-    private fun sendStatusCommand(commandId: Int) {
+    private fun sendStatusCommand(commandId: String) {
         val messageId = smsService.sendStatusSms()
 
         userCommandsRepository.updateMessageId(commandId, messageId)
