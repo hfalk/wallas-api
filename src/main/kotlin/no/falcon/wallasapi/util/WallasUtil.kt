@@ -10,12 +10,16 @@ class WallasUtil {
             val parsedString = rawStatusString.replace('\r', '|')
             val lines = parsedString.split('|')
 
+            val setTemp = parseStatusResponseLine(lines[2]).replace("C", "")
+            val readTemp = parseStatusResponseLine(lines[3]).replace("C", "")
+            val volt = parseStatusResponseLine(lines[4]).replace("V", "")
+
             return StatusContent(
                 rawStatusString,
                 parseStatusResponseLine(lines[0]),
-                parseStatusResponseLine(lines[2]),
-                parseStatusResponseLine(lines[3]),
-                parseStatusResponseLine(lines[4])
+                setTemp.toDouble(),
+                readTemp.toDouble(),
+                volt.toDouble()
             )
         }
     }
