@@ -11,8 +11,8 @@ class StatusRowMapper : RowMapper<Status> {
             resultSet.getString("id"),
             resultSet.getTimestamp("created_time").toLocalDateTime(),
             WallasUtil.parseStatusResponseString(resultSet.getString("raw_value")),
-            resultSet.getString("from_phone_number"),
-            resultSet.getString("message_id")
+            resultSet.getString("message_id"),
+            resultSet.getString("push_notification_id")
         )
     }
 }
