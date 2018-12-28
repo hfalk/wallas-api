@@ -5,7 +5,7 @@ import com.twilio.rest.api.v2010.account.Message
 import com.twilio.type.PhoneNumber
 import no.falcon.wallasapi.domain.SmsProvider
 import no.falcon.wallasapi.properties.FeaturesProperties
-import no.falcon.wallasapi.properties.TwillioProperties
+import no.falcon.wallasapi.properties.TwilioProperties
 import no.falcon.wallasapi.properties.WallasProperties
 import org.springframework.stereotype.Service
 import software.amazon.awssdk.regions.Region
@@ -17,7 +17,7 @@ import software.amazon.awssdk.services.sns.model.PublishRequest
 class SmsService(
     private val wallasProperties: WallasProperties,
     private val featuresProperties: FeaturesProperties,
-    private val twillioProperties: TwillioProperties
+    private val twilioProperties: TwilioProperties
 ) {
     private fun sendSmsAws(smsText: String): String {
         val snsClient = SnsClient.builder()
@@ -42,13 +42,13 @@ class SmsService(
         return response.messageId()
     }
 
-    private fun sendSmsTwillio(smsText: String): String {
-        Twilio.init(twillioProperties.accountSid, twillioProperties.authToken)
+    private fun sendSmsTwilio(smsText: String): String {
+        Twilio.init(twilioProperties.accountSid, twilioProperties.authToken)
 
         val message = Message
             .creator(
                 PhoneNumber(wallasProperties.phoneNumber),
-                PhoneNumber(twillioProperties.phoneNumber),
+                twilioProperties.serviceSid,
                 smsText
             )
             .create()
@@ -59,7 +59,7 @@ class SmsService(
     private fun sendSms(smsText: String): String {
         return when (featuresProperties.smsProvider) {
             SmsProvider.AWS -> sendSmsAws(smsText)
-            SmsProvider.TWILLIO -> sendSmsTwillio(smsText)
+            SmsProvider.TWILIO -> sendSmsTwilio(smsText)
             SmsProvider.NONE -> "sms_disabled"
         }
     }

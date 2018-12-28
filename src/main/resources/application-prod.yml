@@ -3,10 +3,10 @@ spring:
     driver-class-name: org.postgresql.Driver
     url: ${DATABASE_URL}
 
-twillio:
-  account-sid: ${TWILLIO_ACCOUNT_SID}
-  auth-token: ${TWILLIO_AUTH_TOKEN}
-  phone-number: ${TWILLIO_PHONE_NUMBER}
+twilio:
+  account-sid: ${TWILIO_ACCOUNT_SID}
+  auth-token: ${TWILIO_AUTH_TOKEN}
+  service-sid: ${TWILIO_WALLAS_SERVICE_SID}
 
 wallas:
   phone-number: ${WALLAS_PHONE_NUMBER}

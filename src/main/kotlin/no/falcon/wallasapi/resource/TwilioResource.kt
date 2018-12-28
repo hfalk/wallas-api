@@ -1,7 +1,7 @@
 package no.falcon.wallasapi.resource
 
-import no.falcon.wallasapi.domain.TwillioInboundSms
-import no.falcon.wallasapi.properties.TwillioProperties
+import no.falcon.wallasapi.domain.TwilioInboundSms
+import no.falcon.wallasapi.properties.TwilioProperties
 import no.falcon.wallasapi.service.StatusService
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -14,25 +14,25 @@ import org.springframework.http.ResponseEntity
 
 
 @RestController
-@RequestMapping("twillio")
-class TwillioResource(
+@RequestMapping("twilio")
+class TwilioResource(
     private val statusService: StatusService,
     private val request: HttpServletRequest,
-    private val twillioProperties: TwillioProperties
+    private val twilioProperties: TwilioProperties
 ) {
     @PostMapping(value = ["inbound"], consumes = [MediaType.APPLICATION_FORM_URLENCODED_VALUE])
-    fun inbound(twillioInboundSms: TwillioInboundSms): ResponseEntity<Unit> {
-        if (!twillioRequestIsValid()) {
+    fun inbound(twilioInboundSms: TwilioInboundSms): ResponseEntity<Unit> {
+        if (!twilioRequestIsValid()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
 
-        statusService.insertStatus(twillioInboundSms.Body, twillioInboundSms.MessageSid)
+        statusService.insertStatus(twilioInboundSms.Body, twilioInboundSms.MessageSid)
 
         return ResponseEntity.noContent().build()
     }
 
-    fun twillioRequestIsValid(): Boolean {
-        val authToken = twillioProperties.authToken
+    fun twilioRequestIsValid(): Boolean {
+        val authToken = twilioProperties.authToken
 
         val validator = RequestValidator(authToken)
 

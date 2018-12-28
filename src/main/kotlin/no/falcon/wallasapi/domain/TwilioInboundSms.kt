@@ -1,6 +1,6 @@
 package no.falcon.wallasapi.domain
 
-data class TwillioInboundSms(
+data class TwilioInboundSms(
     val ToCountry: String,
     val ToState: String,
     val SmsMessageSid: String,

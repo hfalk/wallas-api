@@ -14,7 +14,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
             .csrf().disable()
             .authorizeRequests()
             .antMatchers("/actuator/health").permitAll()
-            .antMatchers("/twillio/inbound").permitAll()
+            .antMatchers("/twilio/inbound").permitAll()
             .anyRequest().authenticated()
             .and()
             .httpBasic()
