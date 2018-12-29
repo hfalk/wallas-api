@@ -7,8 +7,6 @@ import java.lang.Exception
 
 class WallasUtil {
     companion object {
-        private val logger = KotlinLogging.logger {}
-
         private fun parseStatusResponseLine(line: String) = line.split(":")[1].trim()
 
         fun parseStatusResponseString(rawStatusString: String): StatusContent {
@@ -20,7 +18,7 @@ class WallasUtil {
                     StatusContent(
                         rawStatusString,
                         WallasStatus.ERROR,
-                        parseStatusResponseLine(lines[1]),
+                        lines[1],
                         null,
                         null,
                         null
@@ -39,8 +37,6 @@ class WallasUtil {
                         volt.toDouble()
                     )
                 }
-
-
             } catch (ex: Exception) {
                 StatusContent(rawStatusString, WallasStatus.UNKNOWN, null, null, null, null)
             }
