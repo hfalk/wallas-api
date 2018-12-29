@@ -33,7 +33,11 @@ class CommandsResource(
 
     @PutMapping("{type}")
     @ResponseStatus(HttpStatus.CREATED)
-    fun putCommand(@PathVariable type: CommandType, @RequestBody commandRequest: CommandRequest) {
+    fun putCommand(
+        @PathVariable type: CommandType,
+        @RequestBody commandRequest: CommandRequest,
+        @RequestParam(required = false, defaultValue = "false") statusFollowup: Boolean
+    ) {
         userCommandsRepository.insertWaitingCommand(
             request.remoteUser,
             type,
