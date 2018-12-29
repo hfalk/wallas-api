@@ -26,6 +26,6 @@ class PushNotificationService(private val appCenterClient: AppCenterClient) {
     fun sendStatusNotification(statusContent: StatusContent) = sendPushNotification(
         "STATUS",
         "Wallas status",
-        "${statusContent.heaterStatus} Set temp: ${statusContent.setTemp}. Read temp: ${statusContent.readTemp}. Volt: ${statusContent.volt}"
+        "${statusContent.message} Set temp: ${statusContent.setTemp}. Read temp: ${statusContent.readTemp}. Volt: ${statusContent.volt}"
     )
 }

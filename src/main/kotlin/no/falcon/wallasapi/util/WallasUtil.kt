@@ -2,6 +2,7 @@ package no.falcon.wallasapi.util
 
 import mu.KotlinLogging
 import no.falcon.wallasapi.domain.StatusContent
+import no.falcon.wallasapi.domain.WallasStatus
 import java.lang.Exception
 
 class WallasUtil {
@@ -15,20 +16,33 @@ class WallasUtil {
                 val parsedString = rawStatusString.replace('\r', '|')
                 val lines = parsedString.split('|')
 
-                val setTemp = parseStatusResponseLine(lines[2]).replace("C", "")
-                val readTemp = parseStatusResponseLine(lines[3]).replace("C", "")
-                val volt = parseStatusResponseLine(lines[4]).replace("V", "")
+                if (parsedString.contains("Wallas error")) {
+                    StatusContent(
+                        rawStatusString,
+                        WallasStatus.ERROR,
+                        parseStatusResponseLine(lines[1]),
+                        null,
+                        null,
+                        null
+                    )
+                } else {
+                    val setTemp = parseStatusResponseLine(lines[2]).replace("C", "")
+                    val readTemp = parseStatusResponseLine(lines[3]).replace("C", "")
+                    val volt = parseStatusResponseLine(lines[4]).replace("V", "")
 
-                StatusContent(
-                    rawStatusString,
-                    parseStatusResponseLine(lines[0]),
-                    setTemp.toDouble(),
-                    readTemp.toDouble(),
-                    volt.toDouble()
-                )
+                    StatusContent(
+                        rawStatusString,
+                        WallasStatus.OK,
+                        parseStatusResponseLine(lines[0]),
+                        setTemp.toDouble(),
+                        readTemp.toDouble(),
+                        volt.toDouble()
+                    )
+                }
+
+
             } catch (ex: Exception) {
-                logger.warn { "Failed to parse status response string [value=$rawStatusString]" }
-                StatusContent(rawStatusString, null, null, null, null)
+                StatusContent(rawStatusString, WallasStatus.UNKNOWN, null, null, null, null)
             }
         }
     }
