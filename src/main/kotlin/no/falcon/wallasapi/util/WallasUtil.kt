@@ -1,6 +1,5 @@
 package no.falcon.wallasapi.util
 
-import mu.KotlinLogging
 import no.falcon.wallasapi.domain.StatusContent
 import no.falcon.wallasapi.domain.WallasStatus
 import java.lang.Exception
