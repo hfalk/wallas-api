@@ -10,3 +10,15 @@ twillio:
   # Get credentials from Twillio
   account-sid:
   auth-token:
+
+click-send:
+  # Get credentials from ClickSend
+  user-name:
+  api-key:
+
+features:
+  sms-provider: CLICK_SEND
+
+wallas:
+  phone-number:
+  pin-code:

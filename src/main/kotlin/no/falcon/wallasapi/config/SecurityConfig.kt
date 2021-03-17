@@ -15,6 +15,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
             .authorizeRequests()
             .antMatchers("/actuator/health").permitAll()
             .antMatchers("/twilio/inbound").permitAll()
+            .antMatchers("/click-send/inbound").permitAll()
             .anyRequest().authenticated()
             .and()
             .httpBasic()

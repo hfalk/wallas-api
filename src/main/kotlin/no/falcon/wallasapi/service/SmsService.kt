@@ -12,12 +12,22 @@ import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.sns.SnsClient
 import software.amazon.awssdk.services.sns.model.MessageAttributeValue
 import software.amazon.awssdk.services.sns.model.PublishRequest
+import ClickSend.ApiClient
+import ClickSend.Model.SmsMessageCollection
+import ClickSend.Model.SmsMessage
+import ClickSend.Api.SmsApi
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import no.falcon.wallasapi.domain.ClickSendSmsResponse
+import no.falcon.wallasapi.properties.ClickSendProperties
+
 
 @Service
 class SmsService(
     private val wallasProperties: WallasProperties,
     private val featuresProperties: FeaturesProperties,
-    private val twilioProperties: TwilioProperties
+    private val twilioProperties: TwilioProperties,
+    private val clickSendProperties: ClickSendProperties
 ) {
     private fun sendSmsAws(smsText: String): String {
         val snsClient = SnsClient.builder()
@@ -56,10 +66,35 @@ class SmsService(
         return message.sid
     }
 
+    private fun sendSmsClickSend(smsText: String): String {
+        val defaultClient = ApiClient()
+        defaultClient.setUsername(clickSendProperties.userName)
+        defaultClient.setPassword(clickSendProperties.apiKey)
+        val apiInstance = SmsApi(defaultClient)
+
+        val smsMessage = SmsMessage().apply {
+            body = smsText
+            to = wallasProperties.phoneNumber
+        }
+        val smsMessages = SmsMessageCollection().apply {
+            messages = listOf(smsMessage)
+        }
+
+        val result = apiInstance.smsSendPost(smsMessages)
+        val response = Json { ignoreUnknownKeys = true }.decodeFromString(ClickSendSmsResponse.serializer(), result)
+        response.data.messages.first().status.let {
+            if (it != "SUCCESS") {
+                throw Exception("ClickSend exception: $it")
+            }
+        }
+        return response.data.messages.first().message_id
+    }
+
     private fun sendSms(smsText: String): String {
         return when (featuresProperties.smsProvider) {
             SmsProvider.AWS -> sendSmsAws(smsText)
             SmsProvider.TWILIO -> sendSmsTwilio(smsText)
+            SmsProvider.CLICK_SEND -> sendSmsClickSend(smsText)
             SmsProvider.NONE -> "sms_disabled"
         }
     }
