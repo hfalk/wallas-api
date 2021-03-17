@@ -8,6 +8,10 @@ twilio:
   auth-token: ${TWILIO_AUTH_TOKEN}
   service-sid: ${TWILIO_WALLAS_SERVICE_SID}
 
+click-send:
+  user-name: ${CLICK_SEND_USER_NAME}
+  api-key: ${CLICK_SEND_API_KEY}
+
 wallas:
   phone-number: ${WALLAS_PHONE_NUMBER}
   pin-code: ${WALLAS_PIN_CODE}
